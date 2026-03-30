@@ -127,6 +127,18 @@ function nextRound() {
 
         msg.textContent = fake ? "フェイント！押すな！" : "押せ！！！";
         active = true;
+
+        // ⭐ フェイントなら3秒後に自動終了
+        if (fake) {
+            setTimeout(() => {
+                if (active) {
+                    active = false;
+                    msg.textContent = "セーフ…次！";
+                    setTimeout(nextRound, 1000);
+                }
+            }, 3000);
+        }
+
     }, wait);
 }
 
