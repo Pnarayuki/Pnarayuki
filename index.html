@@ -182,20 +182,38 @@ function handleHit(player) {
     updateHP();
 
     if (hp1 <= 0) {
-        msg.textContent = "PLAYER 2 勝利！";
-        return;
-    }
-    if (hp2 <= 0) {
-        msg.textContent = "PLAYER 1 勝利！";
-        return;
-    }
+    msg.textContent = "PLAYER 2 勝利！";
+    retryBtn.style.display = "block";
+    return;
+}
+if (hp2 <= 0) {
+    msg.textContent = "PLAYER 1 勝利！";
+    retryBtn.style.display = "block";
+    return;
+}
 
     setTimeout(nextRound, 1000);
 }
 
 updateHP();
 nextRound();
-</script>
+const retryBtn = document.getElementById("retry");
 
+retryBtn.addEventListener("click", () => {
+    hp1 = 100;
+    hp2 = 100;
+    active = false;
+
+    updateHP();
+    msg.textContent = "リスタート！";
+
+    retryBtn.style.display = "none";
+
+    setTimeout(nextRound, 1000);
+});
+</script>
+<button id="retry" style="display:none; margin-top:20px; font-size:20px; padding:10px;">
+  もう一度
+</button>
 </body>
 </html>
