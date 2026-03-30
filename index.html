@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DUEL DOT</title>
+
+<style>
+body {
+    margin: 0;
+    background: #111;
+    color: white;
+    font-family: sans-serif;
+    text-align: center;
+}
+
+h1 {
+    margin-top: 10px;
+}
+
+#game {
+    margin-top: 30px;
+}
+
+#dot {
+    width: 80px;
+    height: 80px;
+    background: yellow;
+    border-radius: 50%;
+    margin: 40px auto;
+    display: none;
+}
+
+.player {
+    display: inline-block;
+    width: 40%;
+}
+
+.hp {
+    height: 20px;
+}
+
+#p1 .hp { background: cyan; }
+#p2 .hp { background: red; }
+
+#message {
+    font-size: 22px;
+    margin-top: 20px;
+}
+
+/* スマホ用ボタン */
+#controls {
+    position: fixed;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+button {
+    font-size: 24px;
+    padding: 20px;
+    width: 40%;
+    border: none;
+    border-radius: 10px;
+}
+
+#btn1 { background: cyan; }
+#btn2 { background: red; }
+</style>
+</head>
+
+<body>
+
+<h1>⚡ DUEL DOT ⚡</h1>
+
+<div id="game">
+
+    <div id="p1" class="player">
+        <h2>PLAYER 1 (A)</h2>
+        <div class="hp" id="hp1"></div>
+    </div>
+
+    <div id="p2" class="player">
+        <h2>PLAYER 2 (L)</h2>
+        <div class="hp" id="hp2"></div>
+    </div>
+
+    <div id="dot"></div>
+    <div id="message">待機中...</div>
+
+</div>
+
+<!-- スマホ操作 -->
+<div id="controls">
+  <button id="btn1">P1</button>
+  <button id="btn2">P2</button>
+</div>
+
+<script>
+let hp1 = 100;
+let hp2 = 100;
+let active = false;
+let fake = false;
+
+const dot = document.getElementById("dot");
+const msg = document.getElementById("message");
+const btn1 = document.getElementById("btn1");
+const btn2 = document.getElementById("btn2");
+
+function updateHP() {
+    document.getElementById("hp1").style.width = hp1 + "%";
+    document.getElementById("hp2").style.width = hp2 + "%";
+}
+
+function nextRound() {
+    dot.style.display = "none";
+    active = false;
+
+    let wait = Math.random() * 2000 + 1000;
+
+    setTimeout(() => {
+        fake = Math.random() < 0.3;
+
+        dot.style.display = "block";
+        dot.style.background = fake ? "purple" : "yellow";
+
+        msg.textContent = fake ? "フェイント！押すな！" : "押せ！！！";
+        active = true;
+    }, wait);
+}
+
+// キーボード操作
+document.addEventListener("keydown", (e) => {
+    if (!active) return;
+
+    if (e.key.toLowerCase() === "a") handleHit(1);
+    if (e.key.toLowerCase() === "l") handleHit(2);
+});
+
+// スマホ操作（タッチ）
+btn1.addEventListener("touchstart", () => {
+    if (active) handleHit(1);
+});
+btn2.addEventListener("touchstart", () => {
+    if (active) handleHit(2);
+});
+
+// PCでもボタン押せるように
+btn1.addEventListener("click", () => {
+    if (active) handleHit(1);
+});
+btn2.addEventListener("click", () => {
+    if (active) handleHit(2);
+});
+
+function handleHit(player) {
+    active = false;
+
+    if (fake) {
+        msg.textContent = "フェイントに引っかかった！";
+        if (player === 1) hp1 -= 10;
+        else hp2 -= 10;
+    } else {
+        msg.textContent = "ヒット！";
+        if (player === 1) hp2 -= 20;
+        else hp1 -= 20;
+    }
+
+    updateHP();
+
+    if (hp1 <= 0) {
+        msg.textContent = "PLAYER 2 勝利！";
+        return;
+    }
+    if (hp2 <= 0) {
+        msg.textContent = "PLAYER 1 勝利！";
+        return;
+    }
+
+    setTimeout(nextRound, 1000);
+}
+
+updateHP();
+nextRound();
+</script>
+
+</body>
+</html>
